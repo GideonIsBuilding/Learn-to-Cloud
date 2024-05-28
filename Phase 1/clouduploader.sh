@@ -5,10 +5,18 @@ green_echo() {
 }
 
 #----------------------
+# Install Pipe Viewer
+#----------------------
+green_echo "Installing Pipe Viewer to monitor data being sent"
+sudo apt install pv
+
+#----------------------
 # Creating an S3 Bucket
 #----------------------
+read -p 'S3 Bucket Name: ' bucket
+read -p 'Region: ' region
 green_echo "Creating an S3 bucket..."
-aws s3 mb s3://ltcbuckets --region us-east-1
+aws s3 mb s3://$bucket --region $region
 green_echo "S3 bucket created!"
 
 #-----------
