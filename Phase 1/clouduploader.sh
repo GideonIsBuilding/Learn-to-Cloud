@@ -4,6 +4,10 @@ green_echo() {
     echo -e "\e[32m$1\e[0m"
 }
 
+red_echo() {
+    echo -e "\e[31m$1\e[0m"
+}
+
 #----------------------
 # Install Pipe Viewer
 #----------------------
@@ -16,7 +20,7 @@ sudo apt install pv
 read -p 'S3 Bucket Name: ' bucket
 read -p 'Region: ' region
 green_echo "Creating an S3 bucket..."
-aws s3 mb s3://$bucket --region $region
+aws s3 mb "s3://$bucket" --region "$region"
 green_echo "S3 bucket created!"
 
 #-----------
@@ -24,7 +28,7 @@ green_echo "S3 bucket created!"
 #-----------
 green_echo "Checking file..."
 if [ ! -f "$1" ]; then
-    green_echo "File does not exist."
+    red_echo "File does not exist."
     exit 1
 fi
 
@@ -32,8 +36,14 @@ fi
 # File Upload & Feedback
 #-----------------------
 green_echo "Uploading & getting feedback..."
-if ! aws s3 cp "$1" s3://ltcbuckets/"$(basename "$1")" --storage-class STANDARD; then
-    green_echo "Upload failed."
+if ! aws s3 cp "$1" "s3://$bucket/$(basename "$1")" --storage-class STANDARD; then
+    red_echo "Upload failed."
 else
     green_echo "Upload successful."
 fi
+
+#------------------------------------
+# Sharing Objects with Presigned URLs
+#------------------------------------
+green_echo "Now generating shareable link to upload..."
+aws s3 presign s3://$bucket/$(basename "$1")" --expires-in 604800 --region "$region" --endpoint-url https://s3.$region.amazonaws.com
