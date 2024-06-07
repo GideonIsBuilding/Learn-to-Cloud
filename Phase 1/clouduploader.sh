@@ -36,7 +36,7 @@ fi
 # File Upload & Feedback
 #-----------------------
 green_echo "Uploading & getting feedback..."
-if ! aws s3 cp "$1" "s3://$bucket/$(basename "$1")" --storage-class STANDARD; then
+if ! pv "$1" aws s3 cp "$1" "s3://$bucket/$(basename "$1")" --storage-class STANDARD --expected-size $file_size; then
     red_echo "Upload failed."
 else
     green_echo "Upload successful."
