@@ -21,7 +21,16 @@ read -rp 'S3 Bucket Name: ' bucket
 read -rp 'Region: ' region
 green_echo "Creating an S3 bucket..."
 aws s3 mb "s3://$bucket" --region "$region"
-green_echo "S3 bucket created!"
+
+#--------------------
+# Check for S3 Bucket
+#--------------------
+if aws s3api head-bucket --bucket "$bucket" 2>/dev/null; then
+    green_echo "S3 bucket created successfully!"
+else
+    red_echo "Failed to create S3 bucket."
+    exit 1
+fi
 
 #-----------
 # File Check
